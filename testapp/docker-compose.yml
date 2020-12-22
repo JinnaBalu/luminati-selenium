@@ -1,0 +1,20 @@
+version: '3.7'
+services:
+  dice_job_funnel:
+    image: dice_job_funnel
+    container_name: dice_job_funnel
+    ports:
+      - '5007:5000'
+    env_file:
+      - ./.env
+    volumes:
+      - prod-logs:/var/dice_job_funnel_logs
+
+volumes:
+    prod-logs:
+        external: true
+
+networks:
+  default:
+    external:
+      name: job_funnel

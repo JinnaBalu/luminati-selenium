@@ -1,0 +1,22 @@
+version: "3.7"
+services:
+  luminati:
+    image: luminati/luminati-proxy:latest
+    container_name: luminati
+    restart: always
+    ports: ["22999:22999", "22225:22225", "24000:24000", "24002:24002"]
+    environment:
+      LPM_PROXY_PORT: 22225
+      LPM_WWW_WHITELIST_IPS: "0.0.0.0/0"
+      LPM_CONFIG: "/etc/luminati/conf/.luminati.json"
+    command: ["luminati"]
+    volumes:
+      - ./conf:/etc/luminati/conf
+  standalone-chrome:
+    image: selenium/standalone-chrome:3
+    container_name: standalone-chrome
+    ports: ["4444:4444"]
+    networks: ["job_funnel"]
+networks:
+  job_funnel:
+    external: true
