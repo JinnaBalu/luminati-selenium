@@ -1,40 +1,34 @@
 from selenium import webdriver
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.common.proxy import Proxy, ProxyType
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.proxy import *
+
 import time
 
-def get_browser(proxy):
+def get_browser(PROXY):
 
     import os
     luminati_host = os.environ.get('LUMINATI_HOST')
     luminati_port = os.environ.get('LUMINATI_PORT')
-    # proxy = 'http://' + luminati_host + ':' + luminati_port
-    # proxy = 'http://127.0.0.1:24000'
-    proxy = 'http://zproxy.lum-superproxy.io:22225'
-    print(proxy)
-    # proxy=None
-    try:
-        chrome_options = webdriver.ChromeOptions()
+    PROXY = 'http://' + luminati_host + ':' + luminati_port
+    print(PROXY)
 
-        # disable images to speed up the page loading
-        prefs = {"profile.managed_default_content_settings.images": 2}
-        chrome_options.add_experimental_option("prefs", prefs)
-        
-        if proxy not in ['None', None]:
-            webdriver.DesiredCapabilities.CHROME['proxy'] = {
-                "httpProxy":proxy,
-                "ftpProxy":proxy,
-                "sslProxy":proxy,
-                "proxyType":"MANUAL"
-            }
-    except Exception as e:
-        print(e, '!!!!!!!!!!')
+    proxy = Proxy()
+    proxy.http_proxy = PROXY
+    proxy.ftp_proxy = PROXY
+    proxy.sslProxy = PROXY
+    proxy.no_proxy = "localhost" #etc... ;)
+    proxy.proxy_type = ProxyType.MANUAL
 
-    path = '/home/balu/balu/work/Courses/infinite-stack/luminati+selinium/job_funnel/app/helper_files/chromedriver'
-    chrome = webdriver.Chrome(executable_path = path, options=chrome_options)
-    # chrome = webdriver.Remote("http://"+ os.environ.get('STANDALONE_CHROME_HOST') + ":" + os.environ.get('STANDALONE_CHROME_PORT') + "/wd/hub", options=chrome_options)
+    capabilities = webdriver.DesiredCapabilities.CHROME
 
-    url = 'https://lumtest.com/myip.json'
-    chrome.get(url)
-    print(chrome.page_source)
+    proxy.add_to_capabilities(capabilities)
+    # path = '/home/balu/balu/work/Courses/luminati+selinium/testapp/app/helper_files/chromedriver'
+    # driver = webdriver.Chrome(executable_path = path, desired_capabilities=capabilities)
     
-    return chrome
+    driver = webdriver.Remote("http://172.20.128.1:4444/wd/hub", desired_capabilities=capabilities)
+    url = 'https://lumtest.com/myip.json'
+    driver.get(url)
+    print(driver.page_source)
+    
+    return driver

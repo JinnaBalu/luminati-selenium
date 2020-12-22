@@ -12,11 +12,18 @@ services:
     command: ["luminati"]
     volumes:
       - ./conf:/etc/luminati/conf
+    networks:
+      static-network:
+        ipv4_address: 172.20.128.2
   standalone-chrome:
     image: selenium/standalone-chrome:3
     container_name: standalone-chrome
     ports: ["4444:4444"]
-    networks: ["job_funnel"]
+    networks:
+      static-network:
+        ipv4_address: 172.20.128.1
 networks:
-  job_funnel:
-    external: true
+  static-network:
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
